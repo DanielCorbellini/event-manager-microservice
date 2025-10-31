@@ -1,31 +1,26 @@
-# Use the official PHP image as a base
 FROM php:8.1-fpm
 
-# Set the working directory
 WORKDIR /var/www
 
-# Install system dependencies
+# Instalar dependências do sistema
 RUN apt-get update && apt-get install -y \
-    libpng-dev \
-    libjpeg-dev \
-    libfreetype6-dev \
-    libzip-dev \
-    unzip \
-    && docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install gd zip
+    libzip-dev unzip git \
+    && docker-php-ext-install pdo pdo_mysql zip bcmath intl
 
-# Install Composer
-COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+# Instalar Composer
+COPY --from=composer:2.6 /usr/bin/composer /usr/bin/composer
 
-# Copy the application code
+# Copiar apenas arquivos de dependências primeiro
+COPY composer.json composer.lock ./
+RUN composer install --no-dev --optimize-autoloader
+
+# Copiar restante do código
 COPY . .
 
-# Install PHP dependencies
-RUN composer install
+# Permissões
+RUN chown -R www-data:www-data storage bootstrap/cache \
+    && chmod -R 775 storage bootstrap/cache
 
-# Expose the port the app runs on
 EXPOSE 9000
 
-# Start the PHP FastCGI Process Manager
-# Verificar depois
 CMD ["php-fpm"]

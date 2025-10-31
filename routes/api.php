@@ -12,6 +12,6 @@ Route::prefix("eventos")->group(function () {
 });
 
 Route::prefix("inscricoes")->group(function () {
-    Route::post('/', [SubscriptionController::class, 'index']);
+    Route::post('/', [SubscriptionController::class, 'store']);
     Route::delete('/{id}', [SubscriptionController::class, 'destroy']);
 });
