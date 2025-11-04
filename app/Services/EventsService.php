@@ -1,24 +1,27 @@
 <?php
 
+namespace App\Services;
+
 use App\Models\Event;
+use Illuminate\Database\Eloquent\Collection;
 
 class EventsService
 {
-    public function create(array $data)
+    public function create(array $data): Event
     {
         return Event::create($data);
     }
 
-    public function update(int $id, array $data)
+    public function update(int $id, array $data): Event
     {
         $event = Event::findOrFail($id);
         $event->update($data);
-        return $event;
+        return $event->fresh();
     }
 
-    public function listAll()
+    public function listAll(): Collection
     {
-        Event::all();
+        return Event::all();
     }
 
     public function getById(int $id)
@@ -26,9 +29,8 @@ class EventsService
         return Event::findOrFail($id);
     }
 
-    public function delete(int $id)
+    public function delete(int $id): bool
     {
-        $event = Event::findOrFail($id);
-        $event->delete();
+        return Event::destroy($id) > 0;
     }
 }

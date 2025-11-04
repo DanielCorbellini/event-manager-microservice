@@ -8,7 +8,8 @@ Route::prefix("eventos")->group(function () {
     Route::post('/', [EventsController::class, 'store']);
     Route::get('/', [EventsController::class, 'index']);
     Route::get('/{id}', [EventsController::class, 'show']);
-    Route::delete('/', [EventsController::class, 'destroy']);
+    Route::put('/{id}', [EventsController::class, 'update']);
+    Route::delete('/{id}', [EventsController::class, 'destroy']);
 });
 
 Route::prefix("inscricoes")->group(function () {

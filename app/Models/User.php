@@ -11,11 +11,10 @@ use Illuminate\Notifications\Notifiable;
 class User extends Model
 {
     protected $table = 'usuarios';
-    protected $primaryKey = 'id';
+    protected $primaryKey = 'id_usuario';
     public $timestamps = false;
 
     protected $fillable = [
-        'id',
         'nome',
         'email',
         'cpf',
