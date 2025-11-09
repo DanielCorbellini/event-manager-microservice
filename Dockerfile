@@ -1,26 +1,22 @@
-FROM php:8.1-fpm
+FROM php:8.2-fpm
 
 WORKDIR /var/www
 
-# Instalar dependências do sistema
+ENV COMPOSER_ALLOW_SUPERUSER=1
+
 RUN apt-get update && apt-get install -y \
-    libzip-dev unzip git \
+    libzip-dev unzip git libicu-dev g++ make autoconf pkg-config \
     && docker-php-ext-install pdo pdo_mysql zip bcmath intl
 
-# Instalar Composer
 COPY --from=composer:2.6 /usr/bin/composer /usr/bin/composer
 
-# Copiar apenas arquivos de dependências primeiro
-COPY composer.json composer.lock ./
-RUN composer install --no-dev --optimize-autoloader
-
-# Copiar restante do código
+# Copiar todo o código antes do composer install
 COPY . .
 
-# Permissões
+RUN composer install --no-dev --optimize-autoloader
+
 RUN chown -R www-data:www-data storage bootstrap/cache \
     && chmod -R 775 storage bootstrap/cache
 
 EXPOSE 9000
-
 CMD ["php-fpm"]
