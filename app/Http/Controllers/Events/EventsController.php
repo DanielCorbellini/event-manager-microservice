@@ -65,7 +65,7 @@ class EventsController extends Controller
         } catch (\Throwable $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Erro interno ao criar evento.',
+                'message' => "Erro interno ao criar evento. {$e->getMessage()}",
             ], 500);
         }
     }
@@ -76,7 +76,6 @@ class EventsController extends Controller
     public function show(int $id)
     {
         try {
-
             $event = $this->eventsService->getById($id);
 
             return response()->json([
@@ -91,7 +90,7 @@ class EventsController extends Controller
         } catch (\Throwable $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Erro interno ao criar evento.',
+                'message' => "Erro interno ao criar evento. {$e->getMessage()}",
             ], 500);
         }
     }
@@ -130,7 +129,7 @@ class EventsController extends Controller
         } catch (\Throwable $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Erro interno ao atualizar evento.',
+                'message' => "Erro interno ao atualizar evento. {$e->getMessage()}",
             ], 500);
         }
     }
