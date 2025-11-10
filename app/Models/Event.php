@@ -10,7 +10,12 @@ class Event extends Model
     protected $primaryKey = 'id_evento';
     public $timestamps = false;
 
-    protected $fillable = ['titulo', 'data_inicio', 'data_fim', 'local'];
+    protected $fillable = [
+        'titulo',
+        'data_inicio',
+        'data_fim',
+        'local'
+    ];
 
     public function subscriptions()
     {
