@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Services\EventsService;
 use App\Http\Controllers\Controller;
 use Exception;
+use Illuminate\Database\QueryException;
 
 class EventsController extends Controller
 {
@@ -139,18 +140,27 @@ class EventsController extends Controller
      */
     public function destroy(int $id)
     {
-        $eventDeleted = $this->eventsService->delete($id);
+        try {
 
-        if (!$eventDeleted) {
+            $eventDeleted = $this->eventsService->delete($id);
+
+            if (!$eventDeleted) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Evento não encontrado.'
+                ], 404);
+            }
+
             return response()->json([
-                'success' => false,
-                'message' => 'Evento não encontrado.'
-            ], 404);
+                'success' => true,
+                'message' => 'Evento deletado com sucesso.'
+            ], 200);
+        } catch (QueryException $e) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Não foi possível excluir o evento, pois já foi realizada alguma inscrição.',
+                'error' => $e->getMessage()
+            ], 500);
         }
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Evento deletado com sucesso.'
-        ], 200);
     }
 }

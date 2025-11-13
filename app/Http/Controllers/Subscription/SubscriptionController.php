@@ -50,7 +50,7 @@ class SubscriptionController extends Controller
 
             $subscription = $this->subscriptionService->create($validated);
 
-            if ($subscription->id_usuario == $validated['id_usuario'] && $subscription->id_evento) {
+            if ($subscription->id_usuario == $validated['id_usuario'] && $subscription->id_evento && $subscription->status) {
                 return response()->json([
                     'success' => false,
                     'message' => 'O usuário já está inscrito neste evento.'
