@@ -37,6 +37,26 @@ class EventsController extends Controller
         ], 200);
     }
 
+    public function listUserEvents(Request $request)
+    {
+        $data = $request->all();
+        $userId = $data['id_usuario'];
+
+        $userEvents = $this->eventsService->listAllByUser($userId);
+
+        if ($userEvents->isEmpty()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Nenhum evento foi encontrado'
+            ], 404);
+        }
+
+        return response()->json([
+            'success' => true,
+            'events' => $userEvents
+        ], 200);
+    }
+
     /**
      * Store a newly created resource in storage.
      */
@@ -141,7 +161,6 @@ class EventsController extends Controller
     public function destroy(int $id)
     {
         try {
-
             $eventDeleted = $this->eventsService->delete($id);
 
             if (!$eventDeleted) {

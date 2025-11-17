@@ -33,4 +33,9 @@ class EventsService
     {
         return Event::destroy($id) > 0;
     }
+
+    public function listAllByUser(int $userId): Collection
+    {
+        return Event::where('id_usuario', $userId)->get();
+    }
 }

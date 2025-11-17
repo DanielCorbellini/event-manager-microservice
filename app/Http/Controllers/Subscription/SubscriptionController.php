@@ -5,23 +5,29 @@ namespace App\Http\Controllers\Subscription;
 use App\Exceptions\DuplicateSubscriptionException;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Services\CheckinService;
 use App\Services\SubscriptionService;
 
 class SubscriptionController extends Controller
 {
     private $subscriptionService;
+    private $checkinService;
 
-    public function __construct(SubscriptionService $subscriptionService)
-    {
+    public function __construct(
+        SubscriptionService $subscriptionService,
+        CheckinService $checkinService
+    ) {
         $this->subscriptionService = $subscriptionService;
+        $this->checkinService = $checkinService;
     }
 
     /**
      * Display a listing of the resource.
      * Fazer assim por enquanto, conectar com o jwt depois
      */
-    public function index(int $userId)
+    public function index(Request $request)
     {
+        $userId = $request->id_usuario;
         $subscriptions = $this->subscriptionService->listAllByUser($userId);
 
         if ($subscriptions->isEmpty()) {
@@ -99,5 +105,23 @@ class SubscriptionController extends Controller
             'success' => false,
             'message' => 'Não foi possível cancelar a inscrição. Ela pode não existir ou já estar cancelada.'
         ], 400);
+    }
+
+    public function checkin(int $subscriptionId)
+    {
+        try {
+            $checkin = $this->checkinService->create($subscriptionId);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Check-in realizado com sucesso!',
+                'data' => $checkin,
+            ], 201);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => "Erro ao realizar check-in. {$e->getMessage()}",
+            ], 400);
+        }
     }
 }
