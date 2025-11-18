@@ -14,6 +14,8 @@ Route::prefix("eventos")->group(function () {
     Route::get('/{id}', [EventsController::class, 'show']);
     Route::put('/{id}', [EventsController::class, 'update']);
     Route::delete('/{id}', [EventsController::class, 'destroy']);
+
+    Route::get('/{id}/inscricoes', [EventsController::class, 'listEventSubscriptions']);
 });
 
 // Inscrições

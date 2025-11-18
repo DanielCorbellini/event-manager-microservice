@@ -5,16 +5,21 @@ namespace App\Http\Controllers\Events;
 use Illuminate\Http\Request;
 use App\Services\EventsService;
 use App\Http\Controllers\Controller;
+use App\Services\SubscriptionService;
 use Exception;
 use Illuminate\Database\QueryException;
 
 class EventsController extends Controller
 {
     protected $eventsService;
+    protected $subscriptionService;
 
-    public function __construct(EventsService $eventsService)
-    {
+    public function __construct(
+        EventsService $eventsService,
+        SubscriptionService $subscriptionService
+    ) {
         $this->eventsService = $eventsService;
+        $this->subscriptionService = $subscriptionService;
     }
 
     /**
@@ -181,5 +186,22 @@ class EventsController extends Controller
                 'error' => $e->getMessage()
             ], 500);
         }
+    }
+
+    public function listEventSubscriptions(int $eventId)
+    {
+        $eventSubscription = $this->subscriptionService->listAllSubscriptionsByEventId($eventId);
+
+        if ($eventSubscription->isEmpty()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Nenhuma inscrição foi encontrada para este evento.'
+            ], 404);
+        }
+
+        return response()->json([
+            'success' => true,
+            'inscricoes' => $eventSubscription
+        ], 200);
     }
 }

@@ -22,4 +22,9 @@ class Checkin extends Model
             $model->data_checkin = now();
         });
     }
+
+    public function subscription()
+    {
+        return $this->belongsTo(Subscription::class, 'id_inscricao', 'id_inscricao');
+    }
 }

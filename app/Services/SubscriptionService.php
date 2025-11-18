@@ -19,12 +19,14 @@ class SubscriptionService
             throw new DuplicateSubscriptionException("O usuário já está inscrito neste evento.");
         }
 
-        return Subscription::create($data);
+        $subscription = Subscription::create($data);
+
+        return $subscription->load('user');
     }
 
     public function listAllByUser(int $idUser): Collection
     {
-        return Subscription::where('id_usuario', $idUser)->get();
+        return Subscription::with('user')->where('id_usuario', $idUser)->get();
     }
 
     public function getById(int $id)
@@ -32,21 +34,29 @@ class SubscriptionService
         return Subscription::findOrFail($id);
     }
 
-    public function cancelSubscription(int $id): bool
+    public function cancelSubscription(int $id): ?Subscription
     {
         $subscription = Subscription::find($id);
 
         if (!$subscription) {
-            return false;
+            return null;
         }
 
         if ($subscription->status === false) {
-            return false;
+            return null;
         }
 
         $subscription->status = false;
         $subscription->data_cancelamento = now();
+        $subscription->save();
 
-        return $subscription->save();
+        $subscription->load('user');
+
+        return $subscription;
+    }
+
+    public function listAllSubscriptionsByEventId(int $eventId): Collection
+    {
+        return Subscription::with('user')->where('id_evento', $eventId)->get();
     }
 }

@@ -14,8 +14,10 @@ class CheckinService
             throw new \Exception("Check-in já existe para esta inscrição.");
         }
 
-        return Checkin::create([
+        $checkin =  Checkin::create([
             'id_inscricao' => $subscriptionid,
         ]);
+
+        return $checkin->load('subscription.user');
     }
 }

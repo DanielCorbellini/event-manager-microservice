@@ -27,7 +27,8 @@ class SubscriptionController extends Controller
      */
     public function index(Request $request)
     {
-        $userId = $request->id_usuario;
+        $data = $request->all();
+        $userId = $data['id_usuario'];
         $subscriptions = $this->subscriptionService->listAllByUser($userId);
 
         if ($subscriptions->isEmpty()) {
@@ -55,13 +56,6 @@ class SubscriptionController extends Controller
             ]);
 
             $subscription = $this->subscriptionService->create($validated);
-
-            if ($subscription->id_usuario == $validated['id_usuario'] && $subscription->id_evento && $subscription->status) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'O usuário já está inscrito neste evento.'
-                ], 400);
-            }
 
             return response()->json([
                 'success' => true,
@@ -92,19 +86,20 @@ class SubscriptionController extends Controller
      */
     public function destroy(int $id)
     {
-        $canceled = $this->subscriptionService->cancelSubscription($id);
+        $canceledSubscription = $this->subscriptionService->cancelSubscription($id);
 
-        if ($canceled) {
+        if (empty($canceledSubscription)) {
             return response()->json([
-                'success' => true,
-                'message' => 'Inscrição cancelada com sucesso.'
-            ], 200);
+                'success' => false,
+                'message' => 'Não foi possível cancelar a inscrição. Ela pode não existir ou já estar cancelada.'
+            ], 400);
         }
 
         return response()->json([
-            'success' => false,
-            'message' => 'Não foi possível cancelar a inscrição. Ela pode não existir ou já estar cancelada.'
-        ], 400);
+            'success' => true,
+            'message' => 'Inscrição cancelada com sucesso.',
+            'data' => $canceledSubscription
+        ], 200);
     }
 
     public function checkin(int $subscriptionId)
