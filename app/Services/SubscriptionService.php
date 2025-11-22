@@ -21,12 +21,12 @@ class SubscriptionService
 
         $subscription = Subscription::create($data);
 
-        return $subscription->load('user');
+        return $subscription->load(['user', 'event', 'checkin']);
     }
 
     public function listAllByUser(int $idUser): Collection
     {
-        return Subscription::with('user')->where('id_usuario', $idUser)->get();
+        return Subscription::with(['user', 'event', 'checkin'])->where('id_usuario', $idUser)->get();
     }
 
     public function getById(int $id)
@@ -50,13 +50,13 @@ class SubscriptionService
         $subscription->data_cancelamento = now();
         $subscription->save();
 
-        $subscription->load('user');
+        $subscription->load(['user', 'event', 'checkin']);
 
         return $subscription;
     }
 
     public function listAllSubscriptionsByEventId(int $eventId): Collection
     {
-        return Subscription::with('user')->where('id_evento', $eventId)->get();
+        return Subscription::with(['user', 'event', 'checkin'])->where('id_evento', $eventId)->get();
     }
 }

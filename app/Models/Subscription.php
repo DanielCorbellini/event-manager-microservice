@@ -36,6 +36,11 @@ class Subscription extends Model
 
     public function event()
     {
-        return $this->belongsTo(User::class, 'id_evento', 'id_evento');
+        return $this->belongsTo(Event::class, 'id_evento', 'id_evento');
+    }
+
+    public function checkin()
+    {
+        return $this->hasOne(Checkin::class, 'id_inscricao', 'id_inscricao');
     }
 }
