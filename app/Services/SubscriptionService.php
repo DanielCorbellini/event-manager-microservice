@@ -57,6 +57,6 @@ class SubscriptionService
 
     public function listAllSubscriptionsByEventId(int $eventId): Collection
     {
-        return Subscription::with(['user', 'event', 'checkin'])->where('id_evento', $eventId)->get();
+        return Subscription::with(['user', 'event', 'checkin'])->where('id_evento', $eventId)->where('status', true)->get();
     }
 }
