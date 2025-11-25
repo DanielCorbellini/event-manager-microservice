@@ -3,6 +3,9 @@
 namespace App\Http\Middleware;
 
 use Closure;
+use Throwable;
+use Firebase\JWT\JWT;
+use Firebase\JWT\Key;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -10,25 +13,32 @@ class JwtMiddleware
 {
     /**
      * Handle an incoming request.
-     *
-     * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
      */
     public function handle(Request $request, Closure $next): Response
     {
-        // try {
-        //     // Tenta autenticar via token
-        //     $user = JWTAuth::parseToken()->authenticate();
-        //     if (!$user) {
-        //         return new JsonResponse(['error' => 'Usuário não encontrado'], 401);
-        //     }
+        $token = $request->bearerToken();
 
-        //     // Define o usuário como autenticado
-        // Usar a classe Auth::user() depois nas controllers / service
-        //     auth()->setUser($user);
-        // } catch (JWTException $e) {
-        //     return new JsonResponse(['error' => 'Token inválido ou ausente'], 401);
-        // }
+        if (empty($token)) {
+            return $this->unauthorized("Token não fornecido");
+        }
+
+        try {
+            // Decodificar o token e deixar rolar se não der problema
+            $decoded = JWT::decode($token, new Key(env('JWT_SECRET'), 'HS256'));
+
+            $request->attributes->set('jwt', $decoded);
+        } catch (Throwable $e) {
+            return $this->unauthorized("Token inválido ou expirado", $e->getMessage());
+        }
 
         return $next($request);
+    }
+
+    private function unauthorized(string $message, ?string $details = null)
+    {
+        return response()->json([
+            'error' => $message,
+            'details' => $details,
+        ], 401);
     }
 }

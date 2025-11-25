@@ -225,7 +225,7 @@ Query: `id_usuario`
 
 ### Respostas
 
-✔️ **201 Created**
+### ✔️ **201 Created**
 
 ```json
 {
