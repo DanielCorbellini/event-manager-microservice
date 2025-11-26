@@ -16,19 +16,11 @@ class JwtMiddleware
      */
     public function handle(Request $request, Closure $next): Response
     {
-        $token = $request->bearerToken();
+        $gatewayKey = $request->header('X-Gateway-Key');
+        $expectedKey = env('GATEWAY_SECRET');
 
-        if (empty($token)) {
-            return $this->unauthorized("Token não fornecido");
-        }
-
-        try {
-            // Decodificar o token e deixar rolar se não der problema
-            $decoded = JWT::decode($token, new Key(env('GATEWAY_SECRET'), 'HS256'));
-
-            $request->attributes->set('jwt', $decoded);
-        } catch (Throwable $e) {
-            return $this->unauthorized("Token inválido ou expirado", $e->getMessage());
+        if (empty($gatewayKey) || $gatewayKey !== $expectedKey) {
+            return $this->unauthorized("Acesso negado");
         }
 
         return $next($request);
@@ -39,6 +31,6 @@ class JwtMiddleware
         return response()->json([
             'error' => $message,
             'details' => $details,
-        ], 401);
+        ], 403);
     }
 }
