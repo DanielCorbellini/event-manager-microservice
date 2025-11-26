@@ -24,7 +24,7 @@ class JwtMiddleware
 
         try {
             // Decodificar o token e deixar rolar se não der problema
-            $decoded = JWT::decode($token, new Key(env('JWT_SECRET'), 'HS256'));
+            $decoded = JWT::decode($token, new Key(env('GATEWAY_SECRET'), 'HS256'));
 
             $request->attributes->set('jwt', $decoded);
         } catch (Throwable $e) {
